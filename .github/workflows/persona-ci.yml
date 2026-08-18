@@ -41,7 +41,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Typecheck Persona Runtime
-        run: pnpm exec tsc -p packages/preset/persona-runtime/tsconfig.json --noEmit
+        run: pnpm exec tsc -b packages/preset/persona-runtime/tsconfig.json --pretty false
 
       - name: Run Persona Runtime focused tests
         run: >-
