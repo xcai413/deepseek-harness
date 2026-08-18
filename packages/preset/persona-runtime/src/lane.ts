@@ -12,7 +12,7 @@ interface PendingBatch {
 
 /** Per-session activation lane that serializes commits and coalesces pending targets. */
 export class PersonaActivationLane {
-  private pending?: PendingBatch
+  private pending: PendingBatch | undefined
   private draining = false
 
   /**
