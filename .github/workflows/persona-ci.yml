@@ -1,0 +1,50 @@
+name: Persona Runtime CI
+
+on:
+  push:
+    branches:
+      - feature/persona-runtime
+  pull_request:
+    paths:
+      - 'packages/preset/persona-runtime/**'
+      - 'tsconfig.host.json'
+      - '.agents/notes/implemented/architecture/2026-08-18-dynamic-persona-runtime*'
+      - '.github/workflows/persona-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: persona-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  persona-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck Persona Runtime
+        run: pnpm exec tsc -p packages/preset/persona-runtime/tsconfig.json --noEmit
+
+      - name: Run Persona Runtime focused tests
+        run: >-
+          pnpm exec vitest run
+          packages/preset/persona-runtime/tests/lane.spec.ts
+          packages/preset/persona-runtime/tests/runtime.spec.ts
+          packages/preset/persona-runtime/tests/loader-composition.spec.ts
