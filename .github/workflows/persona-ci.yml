@@ -61,3 +61,4 @@ jobs:
           packages/preset/persona-runtime/tests/runtime.spec.ts
           packages/preset/persona-runtime/tests/loader-composition.spec.ts
           packages/client/ui-persona-runtime/tests/store.client.spec.ts
+          packages/bundle/persona-pack/tests/loader-composition.spec.ts
