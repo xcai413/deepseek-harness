@@ -16,7 +16,7 @@ The UI never constructs model input. Persona behavior is owned by `@deepseek-ai/
 
 ## Known limitations
 
-- No cross-tab live push yet; reconnect reloads already-used Session projections.
+- No cross-tab live push or dedicated reconnect invalidation yet; mounting or refreshing a Conversation re-reads that Session's Host-authoritative snapshot.
 - M1 built-in backgrounds are generated gradients rather than Persona Pack assets.
 - The selector exposes Default, JARVIS, and Sherlock only because the runtime registry is still the M1 built-in registry.
 - Appearance is a client projection of the committed Host snapshot and carries no independent persistence.
