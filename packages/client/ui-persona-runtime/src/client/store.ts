@@ -1,6 +1,5 @@
 /** Browser projection of the Host-authoritative Persona runtime. */
 
-import type { ClientConnectionRpc } from '@deepseek-ai/dsh-client-connection/client'
 import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import type {
   PersonaAppearance,
@@ -10,6 +9,19 @@ import type {
   PersonaTarget,
   PersonaWarning,
 } from '../wire.ts'
+
+/** Minimal generic RPC contract consumed by this external UI bundle. */
+export interface PersonaRpc {
+  call(
+    channel: string,
+    endpoint: string,
+    payload: unknown,
+    signal?: AbortSignal,
+  ): Promise<
+    | { ok: true; value: unknown }
+    | { ok: false; error: { message: string } }
+  >
+}
 
 /** UI state for one Session. */
 export interface PersonaSessionState {
@@ -113,7 +125,7 @@ export class PersonaUiController {
   readonly store: SnapshotStore<PersonaUiState> = createSnapshotStore(INITIAL)
   private readonly loadedSessions = new Set<string>()
 
-  constructor(private readonly rpc: ClientConnectionRpc) {}
+  constructor(private readonly rpc: PersonaRpc) {}
 
   /** Load the Persona roster once, retrying after errors. */
   async loadCatalog(): Promise<void> {
