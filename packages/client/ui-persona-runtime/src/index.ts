@@ -1,8 +1,6 @@
 /** Node half of the Persona runtime UI plugin: a narrow browser RPC adapter. */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type { ConnectionRpcHandler } from '@deepseek-ai/dsh-client-connection'
-import type {} from '@deepseek-ai/dsh-client-connection'
 import type { PersonaRuntimeService } from '@deepseek-ai/dsh-persona-runtime'
 import { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { PersonaTarget } from './wire.ts'
@@ -11,6 +9,26 @@ import type { PersonaTarget } from './wire.ts'
 export const name = 'client-ui-persona-runtime'
 /** Runtime and transport required by the Node adapter. */
 export const inject = ['connection', 'personaRuntime']
+
+type HostRpcResult =
+  | { ok: true; value: unknown }
+  | { ok: false; error: { code: string; message: string; details: Record<string, unknown> } }
+
+type HostRpcHandler = (
+  endpoint: string,
+  payload: unknown,
+  signal: AbortSignal,
+) => Promise<HostRpcResult>
+
+interface HostConnectionShape {
+  rpc: {
+    handle(
+      channel: string,
+      handler: HostRpcHandler,
+      options: { authority: 'trusted-host' },
+    ): () => void
+  }
+}
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
@@ -34,7 +52,8 @@ function readTarget(payload: unknown): PersonaTarget {
 /** Register the private RPC channel consumed by this package's browser half. */
 export function apply(ctx: Context): void {
   const runtime = ctx.get('personaRuntime') as PersonaRuntimeService
-  const handler: ConnectionRpcHandler = async (endpoint, payload, signal) => {
+  const connection = ctx.get('connection') as HostConnectionShape
+  const handler: HostRpcHandler = async (endpoint, payload, signal) => {
     if (signal.aborted) {
       return { ok: false, error: { code: 'cancelled', message: 'persona request cancelled', details: {} } }
     }
@@ -70,7 +89,7 @@ export function apply(ctx: Context): void {
   }
 
   ctx.effect(
-    () => ctx.connection.rpc.handle('/persona-runtime', handler, { authority: 'trusted-host' }),
+    () => connection.rpc.handle('/persona-runtime', handler, { authority: 'trusted-host' }),
     'ui-persona-runtime: RPC bridge',
   )
 }
