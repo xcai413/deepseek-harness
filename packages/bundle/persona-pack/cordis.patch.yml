@@ -1,0 +1,9 @@
+# Persona Pack is an additive community bundle: no DeepSeek Harness core or
+# Web bundle row is replaced. Loader dependency injection decides when each row
+# becomes ready inside the target profile.
+- insert:
+    - id: persona-runtime
+      name: '@deepseek-ai/dsh-persona-runtime'
+
+    - id: ui-persona-runtime
+      name: '@deepseek-ai/dsh-client-ui-persona-runtime'
