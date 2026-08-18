@@ -1,38 +1,39 @@
 /** Session-header Persona selector plus conversation-scoped appearance projection. */
 
-import { useEffect, useRef, useState } from 'react'
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
-import type { InjectFace, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type RefObject,
+} from 'react'
 import {
   IconAgentPresetOutline16,
   IconChevronDownOutline14,
   Menu,
 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type { PersonaTarget } from '../wire.ts'
-import type { PersonaUiState } from './store.ts'
+import type { PersonaStore } from './store.ts'
 import css from './PersonaSelector.module.css'
 
 /** Registration-side business face for the header selector. */
 export interface PersonaSelectorInjected {
-  hooks: {
-    personaUi: SnapshotStore<PersonaUiState>
-  }
+  store: PersonaStore
   loadCatalog: () => Promise<void>
   loadSession: (sessionId: string) => Promise<void>
   activate: (sessionId: string, target: PersonaTarget) => Promise<void>
 }
 
-/** Full slot props for one Session selector. */
-export type PersonaSelectorProps =
-  PropsRuntime<'conversation.session.header.utilities'>
-  & InjectFace<PersonaSelectorInjected>
+/** Minimal owner props supplied by the conversation header slot. */
+export interface PersonaSelectorProps extends PersonaSelectorInjected {
+  sessionId: string
+}
 
 function backgroundFor(id: string | undefined): string | undefined {
-  if (id?.includes('/jarvis/') === true) {
+  if (id === 'persona-pack/jarvis') {
     return 'radial-gradient(circle at 82% 12%, rgba(79, 209, 255, 0.22), transparent 38%), linear-gradient(135deg, rgba(6, 22, 35, 0.10), rgba(17, 92, 119, 0.08))'
   }
-  if (id?.includes('/sherlock/') === true) {
+  if (id === 'persona-pack/sherlock') {
     return 'radial-gradient(circle at 18% 14%, rgba(122, 62, 72, 0.20), transparent 42%), linear-gradient(135deg, rgba(77, 45, 38, 0.10), rgba(116, 87, 57, 0.08))'
   }
   return undefined
@@ -40,7 +41,7 @@ function backgroundFor(id: string | undefined): string | undefined {
 
 /** Apply only the committed Persona appearance to the current conversation root. */
 function usePersonaAppearance(
-  anchor: React.RefObject<HTMLSpanElement>,
+  anchor: RefObject<HTMLSpanElement>,
   activeId: string | undefined,
   accent: string | undefined,
 ): void {
@@ -81,12 +82,12 @@ function usePersonaAppearance(
 /** Render the active Persona as a live Session control. */
 export function PersonaSelector({
   sessionId,
-  usePersonaUi,
+  store,
   loadCatalog,
   loadSession,
   activate,
 }: PersonaSelectorProps) {
-  const state = usePersonaUi(snapshot => snapshot)
+  const state = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot)
   const session = state.sessions[sessionId]
   const snapshot = session?.snapshot ?? null
   const activeId = snapshot?.active?.id
