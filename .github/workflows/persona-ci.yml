@@ -40,10 +40,8 @@ jobs:
           node-version: '24'
           cache: pnpm
 
-      # Temporary diagnostic mode while the new client package dependency graph
-      # is still moving. Final gate returns to --frozen-lockfile before UX test.
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Typecheck Persona packages
         run: |
