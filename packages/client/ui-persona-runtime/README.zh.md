@@ -16,7 +16,7 @@ UI 不构造任何模型输入。人格行为仍由 `@deepseek-ai/dsh-persona-ru
 
 ## 当前限制
 
-- 暂无跨标签页实时 Push；重连时会重新读取已经用过的 Session 投影。
+- 暂无跨标签页实时 Push，也没有专门的重连失效通知；Conversation 重新挂载或页面刷新时会重新读取该 Session 的 Host 权威 Snapshot。
 - M1 背景是程序生成渐变，不是真实 Persona Pack 资产。
 - 当前选择器只有 Default、JARVIS、Sherlock，因为 Runtime Registry 仍是 M1 内置 Registry。
 - Appearance 只是 Host committed Snapshot 的浏览器投影，没有独立持久化权威。
