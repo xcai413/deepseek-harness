@@ -49,8 +49,8 @@ jobs:
           pnpm exec tsc -b packages/client/ui-persona-runtime/tsconfig.json --pretty false
           pnpm exec tsc -b packages/bundle/persona-pack/tsconfig.json --pretty false
 
-      - name: Typecheck repository client aggregate
-        run: pnpm exec tsc -b tsconfig.client.json --pretty false
+      - name: Typecheck repository aggregates in canonical order
+        run: pnpm run typecheck
 
       - name: Bundle Persona client surface
         run: pnpm --filter @deepseek-ai/dsh-client-ui-persona-runtime run bundle
