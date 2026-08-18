@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { ClientConnectionRpc } from '@deepseek-ai/dsh-client-connection/client'
-import { PersonaUiController } from '../src/client/store.ts'
+import { PersonaUiController, type PersonaRpc } from '../src/client/store.ts'
 
 function success(value: unknown) {
   return { ok: true as const, value }
@@ -10,7 +9,7 @@ describe('PersonaUiController', () => {
   it('publishes only the Host-committed Persona after activation settles', async () => {
     let finish: ((value: ReturnType<typeof success>) => void) | undefined
     const activation = new Promise<ReturnType<typeof success>>(resolve => { finish = resolve })
-    const rpc: ClientConnectionRpc = {
+    const rpc: PersonaRpc = {
       async call(_channel, endpoint) {
         if (endpoint === 'list') {
           return success([{ ref: { id: 'persona-pack/jarvis', version: '1.0.0' }, name: 'JARVIS' }])
@@ -44,7 +43,7 @@ describe('PersonaUiController', () => {
   })
 
   it('keeps the prior authoritative snapshot when activation fails', async () => {
-    const rpc: ClientConnectionRpc = {
+    const rpc: PersonaRpc = {
       async call(_channel, endpoint) {
         if (endpoint === 'snapshot') {
           return success({
