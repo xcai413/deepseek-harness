@@ -30,9 +30,6 @@ export const name = 'persona-runtime'
 /** Services required by the runtime. */
 export const inject = ['storageDomain', 'agents']
 
-/** Runtime configuration. M1 intentionally has no deployment-varying tunables. */
-export interface Config {}
-
 declare module '@deepseek-ai/cordis' {
   interface Context {
     personaRuntime: PersonaRuntimeService
@@ -129,10 +126,12 @@ export class PersonaRuntimeService extends Service {
   private bindAgent(agent: Agent): void {
     if (this.states.has(agent.id)) return
     const binding = new PersonaBinding(agent)
-    const state: AgentRuntimeState = {
+    let state: AgentRuntimeState
+    const lane = new PersonaActivationLane(target => this.commit(state, target))
+    state = {
       agent,
       binding,
-      lane: new PersonaActivationLane(target => this.commit(state, target)),
+      lane,
       revision: 0,
       warnings: Object.freeze([]),
     }
@@ -183,7 +182,6 @@ export class PersonaRuntimeService extends Service {
             } else {
               await this.requireTable().put(state.agent.id, this.selectionOf(state.agent, persona, revision))
             }
-            signal.throwIfAborted()
           } catch (error: unknown) {
             state.binding.restore(previous)
             state.warnings = previousWarnings
