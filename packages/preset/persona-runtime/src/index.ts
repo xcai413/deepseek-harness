@@ -168,7 +168,7 @@ export class PersonaRuntimeService extends Service {
           signal.throwIfAborted()
           if (!this.mutationAdmissionOpen) throw new Error('persona runtime is shutting down')
 
-          const previous = state.binding.active
+          const previousBinding = state.binding.capture()
           const previousWarnings = state.warnings
           const previousRevision = state.revision
           const revision = previousRevision + 1
@@ -183,7 +183,7 @@ export class PersonaRuntimeService extends Service {
               await this.requireTable().put(state.agent.id, this.selectionOf(state.agent, persona, revision))
             }
           } catch (error: unknown) {
-            state.binding.restore(previous)
+            state.binding.restoreCaptured(previousBinding)
             state.warnings = previousWarnings
             state.revision = previousRevision
             throw error
