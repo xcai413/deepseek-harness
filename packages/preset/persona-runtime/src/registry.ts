@@ -34,7 +34,7 @@ export class PersonaRegistry {
     return Object.freeze([...this.personas.values()].map(persona => Object.freeze({
       ref: persona.ref,
       name: persona.name,
-      appearance: persona.appearance,
+      ...(persona.appearance === undefined ? {} : { appearance: persona.appearance }),
     })))
   }
 }
