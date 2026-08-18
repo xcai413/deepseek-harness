@@ -59,7 +59,7 @@ describe('persona runtime', () => {
       id: 'persona-pack/jarvis',
     })
     expect(jarvis.active?.id).toBe('persona-pack/jarvis')
-    expect(await renderedPrompt(ctx, sessionId)).toContain('You are JARVIS')
+    expect(await renderedPrompt(ctx, sessionId)).toContain('OPERATING MODE: JARVIS')
     expect(await renderedPrompt(ctx, sessionId)).not.toContain('BASE PERSONA')
 
     const sherlock = await ctx.personaRuntime.activate(sessionId, {
@@ -67,12 +67,24 @@ describe('persona runtime', () => {
       id: 'persona-pack/sherlock',
     })
     expect(sherlock.active?.id).toBe('persona-pack/sherlock')
-    expect(await renderedPrompt(ctx, sessionId)).toContain('You are Sherlock')
-    expect(await renderedPrompt(ctx, sessionId)).not.toContain('You are JARVIS')
+    expect(await renderedPrompt(ctx, sessionId)).toContain('INVESTIGATION MODE: SHERLOCK')
+    expect(await renderedPrompt(ctx, sessionId)).not.toContain('OPERATING MODE: JARVIS')
 
     const restored = await ctx.personaRuntime.activate(sessionId, { kind: 'default' })
     expect(restored.active).toBeNull()
-    expect(await renderedPrompt(ctx, sessionId)).toContain('BASE PERSONA')
+    const restoredPrompt = await renderedPrompt(ctx, sessionId)
+    expect(restoredPrompt).toContain('BASE PERSONA')
+    expect(restoredPrompt).toContain('Dynamic Persona mode is OFF for this session.')
+    expect(restoredPrompt).not.toContain('OPERATING MODE: JARVIS')
+    expect(restoredPrompt).not.toContain('INVESTIGATION MODE: SHERLOCK')
+
+    await ctx.personaRuntime.activate(sessionId, {
+      kind: 'persona',
+      id: 'persona-pack/jarvis',
+    })
+    const reactivatedPrompt = await renderedPrompt(ctx, sessionId)
+    expect(reactivatedPrompt).toContain('OPERATING MODE: JARVIS')
+    expect(reactivatedPrompt).not.toContain('Dynamic Persona mode is OFF for this session.')
   })
 
   it('isolates persona state between sessions', async () => {
@@ -85,10 +97,10 @@ describe('persona runtime', () => {
     await ctx.personaRuntime.activate(first, { kind: 'persona', id: 'persona-pack/jarvis' })
     await ctx.personaRuntime.activate(second, { kind: 'persona', id: 'persona-pack/sherlock' })
 
-    expect(await renderedPrompt(ctx, first)).toContain('You are JARVIS')
-    expect(await renderedPrompt(ctx, first)).not.toContain('You are Sherlock')
-    expect(await renderedPrompt(ctx, second)).toContain('You are Sherlock')
-    expect(await renderedPrompt(ctx, second)).not.toContain('You are JARVIS')
+    expect(await renderedPrompt(ctx, first)).toContain('OPERATING MODE: JARVIS')
+    expect(await renderedPrompt(ctx, first)).not.toContain('INVESTIGATION MODE: SHERLOCK')
+    expect(await renderedPrompt(ctx, second)).toContain('INVESTIGATION MODE: SHERLOCK')
+    expect(await renderedPrompt(ctx, second)).not.toContain('OPERATING MODE: JARVIS')
   })
 
   it('rejects an unavailable persona without changing the committed persona', async () => {
@@ -103,6 +115,6 @@ describe('persona runtime', () => {
     })).rejects.toThrow('persona "persona-pack/missing" is not available')
 
     expect(ctx.personaRuntime.snapshot(sessionId).active?.id).toBe('persona-pack/jarvis')
-    expect(await renderedPrompt(ctx, sessionId)).toContain('You are JARVIS')
+    expect(await renderedPrompt(ctx, sessionId)).toContain('OPERATING MODE: JARVIS')
   })
 })
