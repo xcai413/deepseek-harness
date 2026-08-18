@@ -1,5 +1,6 @@
 name: Persona UI Composition Once
 
+# One-shot feature-branch migration; delete after the bot composition commit lands.
 on:
   push:
     branches:
