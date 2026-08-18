@@ -8,8 +8,8 @@ interface PersonaHolder {
 
 /** Agent-scoped prompt binding for one live session. */
 export class PersonaBinding {
-  private holder?: PersonaHolder
-  private disposePrompt?: () => void
+  private holder: PersonaHolder | undefined
+  private disposePrompt: (() => void) | undefined
 
   /**
    * @param agent - live agent whose nearest prompt scope owns the override.
