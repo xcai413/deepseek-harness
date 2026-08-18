@@ -1,6 +1,5 @@
 /** Browser projection of the Host-authoritative Persona runtime. */
 
-import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import type {
   PersonaAppearance,
   PersonaDescriptor,
@@ -46,6 +45,25 @@ const INITIAL: PersonaUiState = Object.freeze({
 })
 
 const CHANNEL = '/persona-runtime'
+
+/** Tiny external-store contract; no dependency on Harness client object/runtime layers. */
+export class PersonaStore {
+  private snapshot: PersonaUiState = INITIAL
+  private readonly listeners = new Set<() => void>()
+
+  readonly getSnapshot = (): PersonaUiState => this.snapshot
+
+  readonly subscribe = (listener: () => void): (() => void) => {
+    this.listeners.add(listener)
+    return () => { this.listeners.delete(listener) }
+  }
+
+  set(next: PersonaUiState): void {
+    if (Object.is(this.snapshot, next)) return
+    this.snapshot = next
+    for (const listener of [...this.listeners]) listener()
+  }
+}
 
 function object(value: unknown): Record<string, unknown> | undefined {
   return typeof value === 'object' && value !== null ? value as Record<string, unknown> : undefined
@@ -122,7 +140,7 @@ function message(error: unknown): string {
 
 /** Browser controller. It never predicts a Persona commit; Host replies replace the snapshot. */
 export class PersonaUiController {
-  readonly store: SnapshotStore<PersonaUiState> = createSnapshotStore(INITIAL)
+  readonly store = new PersonaStore()
   private readonly loadedSessions = new Set<string>()
 
   constructor(private readonly rpc: PersonaRpc) {}
