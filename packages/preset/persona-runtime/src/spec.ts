@@ -7,6 +7,7 @@ const safeInteger = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER)
 
 /** Durable persona selection schema. */
 export const personaSelectionSchema = z.object({
+  sessionCreatedAt: safeInteger,
   personaId: z.string().min(1),
   personaVersion: z.string().min(1),
   manifestHash: z.string().min(1),
