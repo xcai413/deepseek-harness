@@ -15,8 +15,8 @@ import * as StorageDomain from '@deepseek-ai/dsh-storage-domain'
 import * as StorageJson from '@deepseek-ai/dsh-storage-json'
 import SystemPrompt, { renderPrompt } from '@deepseek-ai/dsh-system-prompt'
 import ToolRuntime from '@deepseek-ai/dsh-tools'
-import * as PersonaUiNode from '../../client/ui-persona-runtime/src/index.ts'
-import PersonaRuntimeService from '../../preset/persona-runtime/src/index.ts'
+import * as PersonaUiNode from '../../../client/ui-persona-runtime/src/index.ts'
+import PersonaRuntimeService from '../../../preset/persona-runtime/src/index.ts'
 
 let root: string | undefined
 const contexts: Context[] = []
