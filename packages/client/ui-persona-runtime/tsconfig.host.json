@@ -15,9 +15,6 @@
       "path": "../../../vendor/cordis"
     },
     {
-      "path": "../connection/tsconfig.host.json"
-    },
-    {
       "path": "../../preset/persona-runtime"
     },
     {
