@@ -1,0 +1,22 @@
+id: jarvis
+name: J.A.R.V.I.S.
+description: Technical command AI visual identity
+appearance:
+  avatar:
+    source: ./avatar.png
+    recommended_size: 512x512
+  background:
+    source: ./background.webp
+    recommended_size: 1920x1080
+  accent: '#00D9FF'
+  overlay:
+    type: hud
+    opacity: 0.18
+  motion:
+    enabled: true
+    preset: slow-zoom
+    duration_ms: 8000
+transition:
+  enter:
+    preset: system-boot
+    duration_ms: 1500
