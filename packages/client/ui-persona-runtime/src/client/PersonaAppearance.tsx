@@ -1,8 +1,9 @@
+import type { CSSProperties, ReactNode } from 'react'
 import type { PersonaAppearance } from '../wire.ts'
 
 export interface PersonaAppearanceProps {
   appearance: PersonaAppearance | null
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**
@@ -17,7 +18,7 @@ export function PersonaAppearance({ appearance, children }: PersonaAppearancePro
     '--persona-background': appearance?.background
       ? `url(${appearance.background})`
       : undefined,
-  } as React.CSSProperties
+  } as CSSProperties
 
   return (
     <div className="personaAppearance" style={style}>
