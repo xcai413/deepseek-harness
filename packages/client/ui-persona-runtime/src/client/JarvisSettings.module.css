@@ -1,18 +1,18 @@
 /* JARVIS System Panel projection.
- * The settings shell stays owned by ui-settings-general; Persona only rebinds
- * its material tokens and shell chrome while the current session owns JARVIS.
+ * Settings stays owned by ui-settings-general. The selector is scoped to the
+ * AppFrame whose real sidebar is already projected as JARVIS, then narrows to
+ * the Settings dialog contract: aria-modal dialog with a direct nav rail.
  */
 
-.jarvisSettingsOverlay {
-  --jarvis-settings-cyan: rgba(104, 230, 255, 0.82);
-}
-
-.jarvisSettingsOverlay > [aria-hidden='true'] {
-  background: rgba(0, 8, 15, 0.58) !important;
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='presentation']:has(> [role='dialog'][aria-modal='true']:has(> nav))
+  > [aria-hidden='true'] {
+  background: rgba(0, 8, 15, 0.60) !important;
   backdrop-filter: blur(12px) saturate(1.08) !important;
 }
 
-.jarvisSettingsPanel {
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav) {
   --dsw-alias-bg-base: #03111c;
   --dsw-alias-bg-layer-1: rgba(3, 18, 29, 0.98);
   --dsw-alias-bg-layer-2: rgba(3, 19, 30, 0.975);
@@ -38,8 +38,7 @@
 
   color-scheme: dark;
   border: 1px solid rgba(93, 219, 247, 0.22) !important;
-  background:
-    linear-gradient(145deg, rgba(6, 28, 42, 0.985), rgba(2, 14, 24, 0.985)) !important;
+  background: linear-gradient(145deg, rgba(6, 28, 42, 0.985), rgba(2, 14, 24, 0.985)) !important;
   box-shadow:
     0 30px 86px rgba(0, 4, 10, 0.58),
     0 0 0 1px rgba(0, 9, 16, 0.52),
@@ -47,15 +46,18 @@
     inset 0 0 42px rgba(47, 202, 235, 0.035) !important;
 }
 
-/* The nav is a diagnostic rail, not a second floating card. */
-.jarvisSettingsPanel > nav {
+/* Left navigation becomes a quiet diagnostic rail rather than another card. */
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  > nav {
   position: relative;
-  background:
-    linear-gradient(180deg, rgba(2, 16, 27, 0.84), rgba(2, 13, 22, 0.62));
+  background: linear-gradient(180deg, rgba(2, 16, 27, 0.84), rgba(2, 13, 22, 0.62));
   border-right: 1px solid rgba(83, 205, 233, 0.14);
 }
 
-.jarvisSettingsPanel > nav::after {
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  > nav::after {
   content: 'SYSTEM PANEL  //  JARVIS LINKED';
   position: absolute;
   right: 18px;
@@ -69,39 +71,44 @@
   pointer-events: none;
 }
 
-/* Main options retain their native layout; only the control-room material changes. */
-.jarvisSettingsPanel input,
-.jarvisSettingsPanel textarea,
-.jarvisSettingsPanel select {
+/* Feature-owned rows keep their native geometry and semantics; controls inherit
+ * the dark material tokens from the Settings dialog. */
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  :is(input, textarea, select) {
   color-scheme: dark;
   color: var(--dsw-alias-label-primary);
 }
 
-.jarvisSettingsPanel input::placeholder,
-.jarvisSettingsPanel textarea::placeholder {
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  :is(input, textarea)::placeholder {
   color: rgba(139, 181, 196, 0.62);
 }
 
-.jarvisSettingsPanel button:focus-visible,
-.jarvisSettingsPanel input:focus-visible,
-.jarvisSettingsPanel textarea:focus-visible,
-.jarvisSettingsPanel select:focus-visible {
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  :is(button, input, textarea, select):focus-visible {
   outline: 1px solid rgba(111, 234, 255, 0.62);
   outline-offset: 2px;
 }
 
-/* Keep native semantic button hierarchy but remove light surfaces that leak
- * through settings feature modules which intentionally use transparent fills. */
-.jarvisSettingsPanel button {
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  button {
   transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
 }
 
-.jarvisSettingsPanel hr {
+div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+  [role='dialog'][aria-modal='true']:has(> nav)
+  hr {
   border-color: rgba(91, 207, 233, 0.18);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .jarvisSettingsPanel button {
+  div:has(> [data-shell-overlay]):has(> [data-persona-sidebar='jarvis'])
+    [role='dialog'][aria-modal='true']:has(> nav)
+    button {
     transition: none;
   }
 }
