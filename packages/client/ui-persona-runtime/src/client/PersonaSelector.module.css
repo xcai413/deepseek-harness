@@ -38,12 +38,30 @@
   width: 20px;
   height: 20px;
   flex: none;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--dsw-alias-state-business-primary) 72%, transparent);
   border-radius: 50%;
   background: var(--dsw-alias-state-business-primary);
   color: var(--dsw-alias-label-inverse);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--dsw-alias-state-business-primary) 38%, transparent);
   font-size: 10px;
   font-weight: 600;
   line-height: 20px;
+}
+
+.avatar > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .label {
@@ -89,4 +107,43 @@
   color: var(--dsw-alias-label-secondary);
   font-size: 11px;
   line-height: 16px;
+}
+
+.jarvisSurface {
+  box-shadow:
+    inset 0 0 88px rgba(0, 183, 255, 0.16),
+    inset 0 0 18px rgba(79, 209, 255, 0.10);
+  transition: box-shadow 260ms ease;
+}
+
+.activation {
+  animation: jarvisActivation 1.2s cubic-bezier(0.2, 0.72, 0.22, 1);
+}
+
+@keyframes jarvisActivation {
+  0% {
+    filter: brightness(0.48) saturate(0.65);
+  }
+
+  16% {
+    filter: brightness(1.32) saturate(1.45);
+  }
+
+  34% {
+    filter: brightness(0.82) saturate(1.10);
+  }
+
+  58% {
+    filter: brightness(1.16) saturate(1.28);
+  }
+
+  100% {
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activation {
+    animation: none;
+  }
 }
