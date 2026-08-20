@@ -1,0 +1,107 @@
+/* JARVIS System Panel projection.
+ * The settings shell stays owned by ui-settings-general; Persona only rebinds
+ * its material tokens and shell chrome while the current session owns JARVIS.
+ */
+
+.jarvisSettingsOverlay {
+  --jarvis-settings-cyan: rgba(104, 230, 255, 0.82);
+}
+
+.jarvisSettingsOverlay > [aria-hidden='true'] {
+  background: rgba(0, 8, 15, 0.58) !important;
+  backdrop-filter: blur(12px) saturate(1.08) !important;
+}
+
+.jarvisSettingsPanel {
+  --dsw-alias-bg-base: #03111c;
+  --dsw-alias-bg-layer-1: rgba(3, 18, 29, 0.98);
+  --dsw-alias-bg-layer-2: rgba(3, 19, 30, 0.975);
+  --dsw-alias-bg-module-platform: rgba(8, 39, 55, 0.92);
+  --dsw-alias-fill-tsp-primary: rgba(105, 222, 246, 0.10);
+  --dsw-alias-fill-tsp-secondary: rgba(105, 222, 246, 0.08);
+  --dsw-alias-label-primary: rgba(238, 250, 253, 0.98);
+  --dsw-alias-label-secondary: rgba(205, 229, 237, 0.88);
+  --dsw-alias-label-tertiary: rgba(170, 205, 216, 0.78);
+  --dsw-alias-label-caption: rgba(132, 178, 194, 0.72);
+  --dsw-alias-label-inverse: #04131d;
+  --dsw-alias-border-l1: rgba(84, 203, 232, 0.14);
+  --dsw-alias-border-l2: rgba(91, 215, 242, 0.20);
+  --dsw-alias-border-l3: rgba(103, 229, 252, 0.30);
+  --dsw-alias-separator-primary: rgba(87, 197, 222, 0.18);
+  --dsw-alias-interactive-bg-hover: rgba(48, 193, 224, 0.12);
+  --dsw-specific-sidebar-nav-item-hover: rgba(41, 181, 215, 0.10);
+  --dsw-specific-sidebar-nav-item-active: rgba(45, 193, 226, 0.16);
+  --dsw-static-neutral-bluish-400: rgba(105, 224, 247, 0.42);
+  --dsw-shadow-lv3: 0 28px 80px rgba(0, 4, 10, 0.56), 0 0 0 1px rgba(0, 8, 14, 0.56);
+  --dsh-scrollbar-thumb: rgba(90, 203, 226, 0.22);
+  --dsh-scrollbar-thumb-hover: rgba(107, 224, 248, 0.38);
+
+  color-scheme: dark;
+  border: 1px solid rgba(93, 219, 247, 0.22) !important;
+  background:
+    linear-gradient(145deg, rgba(6, 28, 42, 0.985), rgba(2, 14, 24, 0.985)) !important;
+  box-shadow:
+    0 30px 86px rgba(0, 4, 10, 0.58),
+    0 0 0 1px rgba(0, 9, 16, 0.52),
+    inset 0 1px 0 rgba(166, 240, 255, 0.07),
+    inset 0 0 42px rgba(47, 202, 235, 0.035) !important;
+}
+
+/* The nav is a diagnostic rail, not a second floating card. */
+.jarvisSettingsPanel > nav {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(2, 16, 27, 0.84), rgba(2, 13, 22, 0.62));
+  border-right: 1px solid rgba(83, 205, 233, 0.14);
+}
+
+.jarvisSettingsPanel > nav::after {
+  content: 'SYSTEM PANEL  //  JARVIS LINKED';
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  left: 24px;
+  color: rgba(104, 211, 232, 0.44);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 7px;
+  line-height: 10px;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+}
+
+/* Main options retain their native layout; only the control-room material changes. */
+.jarvisSettingsPanel input,
+.jarvisSettingsPanel textarea,
+.jarvisSettingsPanel select {
+  color-scheme: dark;
+  color: var(--dsw-alias-label-primary);
+}
+
+.jarvisSettingsPanel input::placeholder,
+.jarvisSettingsPanel textarea::placeholder {
+  color: rgba(139, 181, 196, 0.62);
+}
+
+.jarvisSettingsPanel button:focus-visible,
+.jarvisSettingsPanel input:focus-visible,
+.jarvisSettingsPanel textarea:focus-visible,
+.jarvisSettingsPanel select:focus-visible {
+  outline: 1px solid rgba(111, 234, 255, 0.62);
+  outline-offset: 2px;
+}
+
+/* Keep native semantic button hierarchy but remove light surfaces that leak
+ * through settings feature modules which intentionally use transparent fills. */
+.jarvisSettingsPanel button {
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.jarvisSettingsPanel hr {
+  border-color: rgba(91, 207, 233, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jarvisSettingsPanel button {
+    transition: none;
+  }
+}
