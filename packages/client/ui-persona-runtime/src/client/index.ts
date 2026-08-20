@@ -5,24 +5,27 @@ import './JarvisSidebar.module.css'
 import './JarvisFooter.module.css'
 import './JarvisSettings.module.css'
 import { PersonaSelector } from './PersonaSelector.tsx'
-import { JarvisSystemPanel } from './JarvisSystemPanel.tsx'
 import type { PersonaSelectorInjected } from './PersonaSelector.tsx'
-import type { PersonaRpc } from './store.ts'
+import { PersonaUiController, type PersonaRpc } from './store.ts'
 
-export { PersonaSelectorInjected, PersonaSelectorProps } from './PersonaSelector.tsx'
-export { PersonaRpc, PersonaSessionState, PersonaUiState } from './store.ts'
+export type { PersonaSelectorInjected, PersonaSelectorProps } from './PersonaSelector.tsx'
+export type { PersonaRpc, PersonaSessionState, PersonaUiState } from './store.ts'
 export { JarvisSystemPanel } from './JarvisSystemPanel.tsx'
 
+/** Required browser services. */
 export const inject = ['slots', 'connection']
 
 interface PersonaSlots {
   inject(name: string, install: () => unknown): unknown
-  register(config: {
-    name: string
-    id: string
-    order: number
-    inject: () => PersonaSelectorInjected
-  }, component: unknown): () => void
+  register(
+    config: {
+      name: string
+      id: string
+      order: number
+      inject: () => PersonaSelectorInjected
+    },
+    component: unknown,
+  ): () => void
 }
 
 interface ClientSurface {
@@ -30,6 +33,7 @@ interface ClientSurface {
   slots: PersonaSlots
 }
 
+/** Mount one live Persona selector into every conversation header. */
 export function apply(ctx: Context): void {
   const surface = ctx as unknown as ClientSurface
   const connection = surface.get('connection') as { rpc: PersonaRpc }
