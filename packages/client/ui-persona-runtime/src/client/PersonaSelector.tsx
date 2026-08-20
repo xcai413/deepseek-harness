@@ -12,9 +12,16 @@ import {
   IconChevronDownOutline14,
   Menu,
 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PersonaTarget } from '../wire.ts'
+import type { PersonaAppearance, PersonaTarget } from '../wire.ts'
+import jarvisAvatarUrl from './assets/jarvis/jarvis-avatar.png?dataurl'
+import jarvisBackgroundUrl from './assets/jarvis/jarvis-background.png?dataurl'
+import jarvisHudOverlayUrl from './assets/jarvis/jarvis-hud-overlay.png?dataurl'
+import { PersonaAvatar } from './PersonaAvatar.tsx'
 import type { PersonaStore } from './store.ts'
 import css from './PersonaSelector.module.css'
+
+const JARVIS_ID = 'persona-pack/jarvis'
+const SHERLOCK_ID = 'persona-pack/sherlock'
 
 /** Registration-side business face for the header selector. */
 export interface PersonaSelectorInjected {
@@ -29,13 +36,46 @@ export interface PersonaSelectorProps extends PersonaSelectorInjected {
   sessionId: string
 }
 
-function backgroundFor(id: string | undefined): string | undefined {
-  if (id === 'persona-pack/jarvis') {
-    return 'radial-gradient(circle at 82% 12%, rgba(79, 209, 255, 0.22), transparent 38%), linear-gradient(135deg, rgba(6, 22, 35, 0.10), rgba(17, 92, 119, 0.08))'
+function resolvableImageUrl(value: string | undefined): string | undefined {
+  if (value === undefined || value.startsWith('builtin://')) return undefined
+  if (
+    value.startsWith('data:image/')
+    || value.startsWith('blob:')
+    || value.startsWith('https://')
+    || value.startsWith('http://')
+  ) return value
+  return undefined
+}
+
+function avatarFor(activeId: string | undefined, configured: string | undefined): string | undefined {
+  if (activeId === JARVIS_ID) return jarvisAvatarUrl
+  return resolvableImageUrl(configured)
+}
+
+function backgroundFor(
+  activeId: string | undefined,
+  configured: string | undefined,
+): { image: string; layers: number } | undefined {
+  if (activeId === JARVIS_ID) {
+    return {
+      image: [
+        `url("${jarvisHudOverlayUrl}")`,
+        'radial-gradient(circle at 50% 46%, rgba(240, 250, 255, 0.82) 0%, rgba(15, 42, 58, 0.45) 64%, rgba(3, 14, 24, 0.68) 100%)',
+        `url("${jarvisBackgroundUrl}")`,
+      ].join(', '),
+      layers: 3,
+    }
   }
-  if (id === 'persona-pack/sherlock') {
-    return 'radial-gradient(circle at 18% 14%, rgba(122, 62, 72, 0.20), transparent 42%), linear-gradient(135deg, rgba(77, 45, 38, 0.10), rgba(116, 87, 57, 0.08))'
+  if (activeId === SHERLOCK_ID) {
+    return {
+      image: 'radial-gradient(circle at 18% 14%, rgba(122, 62, 72, 0.20), transparent 42%), linear-gradient(135deg, rgba(77, 45, 38, 0.10), rgba(116, 87, 57, 0.08))',
+      layers: 2,
+    }
   }
+
+  const url = resolvableImageUrl(configured)
+  if (url !== undefined) return { image: `url("${url}")`, layers: 1 }
+  if (configured?.includes('gradient(') === true) return { image: configured, layers: 1 }
   return undefined
 }
 
@@ -43,40 +83,82 @@ function backgroundFor(id: string | undefined): string | undefined {
 function usePersonaAppearance(
   anchor: RefObject<HTMLSpanElement>,
   activeId: string | undefined,
-  accent: string | undefined,
+  appearance: PersonaAppearance | null | undefined,
 ): void {
   useEffect(() => {
     const root = anchor.current?.closest<HTMLElement>('[data-phase]')
     if (root === undefined || root === null) return
-    const backgroundImage = backgroundFor(activeId)
-    if (backgroundImage === undefined && accent === undefined) return
+    const background = backgroundFor(activeId, appearance?.background)
+    const accent = appearance?.accent
+    if (background === undefined && accent === undefined) return
 
     const previous = {
       backgroundImage: root.style.backgroundImage,
       backgroundSize: root.style.backgroundSize,
       backgroundPosition: root.style.backgroundPosition,
       backgroundRepeat: root.style.backgroundRepeat,
+      backgroundBlendMode: root.style.backgroundBlendMode,
       accent: root.style.getPropertyValue('--dsw-alias-state-business-primary'),
       accentPriority: root.style.getPropertyPriority('--dsw-alias-state-business-primary'),
     }
 
-    if (backgroundImage !== undefined) {
-      root.style.backgroundImage = backgroundImage
-      root.style.backgroundSize = 'cover'
-      root.style.backgroundPosition = 'center'
-      root.style.backgroundRepeat = 'no-repeat'
+    if (background !== undefined) {
+      const perLayer = Array.from({ length: background.layers }, () => 'cover').join(', ')
+      const perLayerCenter = Array.from({ length: background.layers }, () => 'center').join(', ')
+      const perLayerRepeat = Array.from({ length: background.layers }, () => 'no-repeat').join(', ')
+      root.style.backgroundImage = background.image
+      root.style.backgroundSize = perLayer
+      root.style.backgroundPosition = perLayerCenter
+      root.style.backgroundRepeat = perLayerRepeat
+      if (activeId === JARVIS_ID) root.style.backgroundBlendMode = 'screen, normal, normal'
     }
     if (accent !== undefined) root.style.setProperty('--dsw-alias-state-business-primary', accent)
+    if (activeId === JARVIS_ID) root.classList.add(css.jarvisSurface)
 
     return () => {
       root.style.backgroundImage = previous.backgroundImage
       root.style.backgroundSize = previous.backgroundSize
       root.style.backgroundPosition = previous.backgroundPosition
       root.style.backgroundRepeat = previous.backgroundRepeat
+      root.style.backgroundBlendMode = previous.backgroundBlendMode
+      root.classList.remove(css.jarvisSurface)
       if (previous.accent.length === 0) root.style.removeProperty('--dsw-alias-state-business-primary')
       else root.style.setProperty('--dsw-alias-state-business-primary', previous.accent, previous.accentPriority)
     }
-  }, [accent, activeId, anchor])
+  }, [activeId, anchor, appearance?.accent, appearance?.background])
+}
+
+/** Run the boot pulse only after a Host-committed revision changes to JARVIS. */
+function usePersonaActivation(
+  anchor: RefObject<HTMLSpanElement>,
+  activeId: string | undefined,
+  revision: number | undefined,
+): void {
+  const previousRevision = useRef<number | undefined>(undefined)
+
+  useEffect(() => {
+    if (revision === undefined) return
+    if (previousRevision.current === undefined) {
+      previousRevision.current = revision
+      return
+    }
+    if (previousRevision.current === revision) return
+    previousRevision.current = revision
+    if (activeId !== JARVIS_ID) return
+
+    const root = anchor.current?.closest<HTMLElement>('[data-phase]')
+    if (root === undefined || root === null) return
+    root.classList.remove(css.activation)
+    void root.offsetWidth
+    root.classList.add(css.activation)
+    const timer = window.setTimeout(() => {
+      root.classList.remove(css.activation)
+    }, 1300)
+    return () => {
+      window.clearTimeout(timer)
+      root.classList.remove(css.activation)
+    }
+  }, [activeId, anchor, revision])
 }
 
 /** Render the active Persona as a live Session control. */
@@ -101,12 +183,17 @@ export function PersonaSelector({
     void loadSession(sessionId)
   }, [loadCatalog, loadSession, sessionId])
 
-  usePersonaAppearance(anchorRef, activeId, snapshot?.appearance?.accent)
+  usePersonaAppearance(anchorRef, activeId, snapshot?.appearance)
+  usePersonaActivation(anchorRef, activeId, snapshot?.revision)
 
   const busy = session?.status === 'saving' || session?.status === 'loading'
   const selectedId = activeId ?? 'default'
   const error = session?.error ?? state.catalogError
   const warning = snapshot?.warnings.map(entry => entry.message ?? entry.type).join(' · ')
+  const resolvedAvatar = avatarFor(activeId, snapshot?.appearance?.avatar)
+  const avatarAppearance: PersonaAppearance | null = snapshot?.appearance === undefined || snapshot.appearance === null
+    ? null
+    : { ...snapshot.appearance, avatar: resolvedAvatar }
 
   const items = [
     { id: 'default', label: '默认人格' },
@@ -152,9 +239,8 @@ export function PersonaSelector({
               style={snapshot?.appearance?.accent === undefined
                 ? undefined
                 : { backgroundColor: snapshot.appearance.accent }}
-              aria-hidden="true"
             >
-              {label.slice(0, 1).toUpperCase()}
+              <PersonaAvatar appearance={avatarAppearance} label={label} />
             </span>
             <span className={css.label}>{label}</span>
             <IconAgentPresetOutline16 size={14} className={css.personaIcon} />
