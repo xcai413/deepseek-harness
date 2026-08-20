@@ -22,6 +22,8 @@ import css from './PersonaSelector.module.css'
 
 const JARVIS_ID = 'persona-pack/jarvis'
 const SHERLOCK_ID = 'persona-pack/sherlock'
+const JARVIS_SURFACE_CLASS = css.jarvisSurface!
+const ACTIVATION_CLASS = css.activation!
 
 /** Registration-side business face for the header selector. */
 export interface PersonaSelectorInjected {
@@ -50,6 +52,17 @@ function resolvableImageUrl(value: string | undefined): string | undefined {
 function avatarFor(activeId: string | undefined, configured: string | undefined): string | undefined {
   if (activeId === JARVIS_ID) return jarvisAvatarUrl
   return resolvableImageUrl(configured)
+}
+
+function appearanceWithResolvedAvatar(
+  activeId: string | undefined,
+  appearance: PersonaAppearance | null | undefined,
+): PersonaAppearance | null {
+  if (appearance === undefined || appearance === null) return null
+  const avatar = avatarFor(activeId, appearance.avatar)
+  if (avatar !== undefined) return { ...appearance, avatar }
+  const { avatar: _ignoredAvatar, ...withoutAvatar } = appearance
+  return withoutAvatar
 }
 
 function backgroundFor(
@@ -113,7 +126,7 @@ function usePersonaAppearance(
       if (activeId === JARVIS_ID) root.style.backgroundBlendMode = 'screen, normal, normal'
     }
     if (accent !== undefined) root.style.setProperty('--dsw-alias-state-business-primary', accent)
-    if (activeId === JARVIS_ID) root.classList.add(css.jarvisSurface)
+    if (activeId === JARVIS_ID) root.classList.add(JARVIS_SURFACE_CLASS)
 
     return () => {
       root.style.backgroundImage = previous.backgroundImage
@@ -121,7 +134,7 @@ function usePersonaAppearance(
       root.style.backgroundPosition = previous.backgroundPosition
       root.style.backgroundRepeat = previous.backgroundRepeat
       root.style.backgroundBlendMode = previous.backgroundBlendMode
-      root.classList.remove(css.jarvisSurface)
+      root.classList.remove(JARVIS_SURFACE_CLASS)
       if (previous.accent.length === 0) root.style.removeProperty('--dsw-alias-state-business-primary')
       else root.style.setProperty('--dsw-alias-state-business-primary', previous.accent, previous.accentPriority)
     }
@@ -148,15 +161,15 @@ function usePersonaActivation(
 
     const root = anchor.current?.closest<HTMLElement>('[data-phase]')
     if (root === undefined || root === null) return
-    root.classList.remove(css.activation)
+    root.classList.remove(ACTIVATION_CLASS)
     void root.offsetWidth
-    root.classList.add(css.activation)
+    root.classList.add(ACTIVATION_CLASS)
     const timer = window.setTimeout(() => {
-      root.classList.remove(css.activation)
+      root.classList.remove(ACTIVATION_CLASS)
     }, 1300)
     return () => {
       window.clearTimeout(timer)
-      root.classList.remove(css.activation)
+      root.classList.remove(ACTIVATION_CLASS)
     }
   }, [activeId, anchor, revision])
 }
@@ -190,10 +203,7 @@ export function PersonaSelector({
   const selectedId = activeId ?? 'default'
   const error = session?.error ?? state.catalogError
   const warning = snapshot?.warnings.map(entry => entry.message ?? entry.type).join(' · ')
-  const resolvedAvatar = avatarFor(activeId, snapshot?.appearance?.avatar)
-  const avatarAppearance: PersonaAppearance | null = snapshot?.appearance === undefined || snapshot.appearance === null
-    ? null
-    : { ...snapshot.appearance, avatar: resolvedAvatar }
+  const avatarAppearance = appearanceWithResolvedAvatar(activeId, snapshot?.appearance)
 
   const items = [
     { id: 'default', label: '默认人格' },
