@@ -290,6 +290,24 @@
   color: rgba(137, 182, 199, 0.70) !important;
 }
 
+/* The leading command trigger used to remain a white disk because its own
+   module owns a light fill. Keep the control semantics but bring it into the
+   console instrument palette. */
+.jarvisConsole button[aria-haspopup='listbox'] {
+  border: 1px solid rgba(99, 222, 248, 0.26) !important;
+  background: rgba(6, 34, 48, 0.94) !important;
+  color: rgba(190, 239, 249, 0.90) !important;
+  box-shadow:
+    inset 0 0 9px rgba(69, 211, 240, 0.06),
+    0 0 10px rgba(42, 198, 231, 0.08) !important;
+}
+
+.jarvisConsole button[aria-haspopup='listbox']:hover:not(:disabled),
+.jarvisConsole button[aria-haspopup='listbox'][aria-expanded='true'] {
+  border-color: rgba(113, 235, 255, 0.48) !important;
+  background: rgba(8, 48, 66, 0.96) !important;
+}
+
 .jarvisConsole:focus-within {
   border-color: rgba(116, 237, 255, 0.58) !important;
   box-shadow:
@@ -298,6 +316,77 @@
     0 0 24px rgba(56, 207, 242, 0.12),
     inset 0 1px 0 rgba(160, 242, 255, 0.10),
     inset 0 0 28px rgba(54, 208, 244, 0.06) !important;
+}
+
+/* Composer-owned popup/listbox shell. The runtime tags only overlays that
+   actually appear inside the active JARVIS composer subtree. */
+.jarvisOverlay,
+.jarvisPortal {
+  --dsw-alias-label-primary: rgba(236, 249, 253, 0.98);
+  --dsw-alias-label-secondary: rgba(199, 228, 238, 0.90);
+  --dsw-alias-label-tertiary: rgba(167, 207, 220, 0.82);
+  --dsw-alias-label-caption: rgba(135, 184, 202, 0.76);
+  --dsw-alias-interactive-bg-hover: rgba(45, 191, 224, 0.13);
+
+  border: 1px solid rgba(91, 222, 251, 0.32) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(180deg, rgba(3, 24, 38, 0.985), rgba(2, 16, 27, 0.985)) !important;
+  color: rgba(229, 247, 252, 0.98) !important;
+  box-shadow:
+    0 22px 54px rgba(0, 5, 12, 0.46),
+    0 0 0 1px rgba(0, 10, 17, 0.42),
+    0 0 26px rgba(54, 205, 240, 0.08),
+    inset 0 1px 0 rgba(153, 239, 255, 0.07) !important;
+}
+
+.jarvisOverlay input,
+.jarvisPortal input {
+  border-color: rgba(93, 215, 242, 0.20) !important;
+  background: rgba(4, 29, 42, 0.88) !important;
+  color: rgba(232, 249, 253, 0.98) !important;
+  caret-color: #79f2ff !important;
+}
+
+.jarvisOverlay input::placeholder,
+.jarvisPortal input::placeholder {
+  color: rgba(139, 188, 204, 0.70) !important;
+}
+
+.jarvisOverlay [role='option'],
+.jarvisOverlay [role='menuitem'],
+.jarvisPortal [role='option'],
+.jarvisPortal [role='menuitem'] {
+  color: rgba(218, 243, 249, 0.94) !important;
+  background: transparent !important;
+}
+
+.jarvisOverlay [role='option'] *,
+.jarvisOverlay [role='menuitem'] *,
+.jarvisPortal [role='option'] *,
+.jarvisPortal [role='menuitem'] * {
+  color: inherit;
+}
+
+.jarvisOverlay [role='option'][aria-selected='true'],
+.jarvisOverlay [role='menuitem']:hover,
+.jarvisOverlay [role='menuitem']:focus-visible,
+.jarvisPortal [role='option'][aria-selected='true'],
+.jarvisPortal [role='menuitem']:hover,
+.jarvisPortal [role='menuitem']:focus-visible {
+  background: linear-gradient(90deg, rgba(37, 180, 214, 0.16), rgba(65, 218, 244, 0.08)) !important;
+  color: rgba(239, 253, 255, 1) !important;
+}
+
+.jarvisOverlay [role='menu'],
+.jarvisPortal [role='menu'] {
+  border-color: rgba(91, 222, 251, 0.26) !important;
+  background: rgba(3, 24, 38, 0.985) !important;
+}
+
+.jarvisOverlay svg,
+.jarvisPortal svg {
+  color: rgba(129, 232, 248, 0.86);
 }
 
 .activation {
