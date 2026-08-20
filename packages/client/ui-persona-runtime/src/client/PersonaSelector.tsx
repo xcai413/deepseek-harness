@@ -78,13 +78,18 @@ function backgroundFor(
 ): BackgroundProjection | undefined {
   if (activeId === JARVIS_ID) {
     return {
-      // Keep the visual asset untouched. Readability is now owned by the
-      // transcript's stable [data-chat-flow] glass panel instead of a
-      // full-surface white veil, so the command-room image stays crisp.
-      image: `url("${jarvisBackgroundUrl}")`,
-      size: 'cover',
-      position: 'center center',
-      repeat: 'no-repeat',
+      // Keep the command-room image crisp. Readability comes from two optical
+      // scrims rather than a floating card: a shallow light header wash keeps
+      // Harness' native dark header chrome readable, while a dark cinematic
+      // centre scrim gives the transcript enough contrast for light text.
+      image: [
+        'linear-gradient(180deg, rgba(244, 250, 253, 0.82) 0%, rgba(244, 250, 253, 0.58) 64px, rgba(244, 250, 253, 0.00) 132px)',
+        'linear-gradient(90deg, rgba(1, 9, 17, 0.10) 0%, rgba(1, 11, 20, 0.42) 24%, rgba(2, 14, 25, 0.58) 50%, rgba(1, 11, 20, 0.42) 76%, rgba(1, 9, 17, 0.10) 100%)',
+        `url("${jarvisBackgroundUrl}")`,
+      ].join(', '),
+      size: '100% 100%, 100% 100%, cover',
+      position: 'center top, center, center center',
+      repeat: 'no-repeat, no-repeat, no-repeat',
     }
   }
   if (activeId === SHERLOCK_ID) {
