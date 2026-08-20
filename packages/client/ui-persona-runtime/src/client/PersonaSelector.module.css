@@ -248,6 +248,14 @@
   --dsw-alias-label-secondary: rgba(203, 229, 238, 0.88);
   --dsw-alias-label-tertiary: rgba(171, 206, 219, 0.78);
   --dsw-alias-label-caption: rgba(139, 187, 204, 0.74);
+  --dsw-specific-menu: rgba(3, 24, 38, 0.985);
+  --dsw-alias-border-inverted: rgba(92, 222, 251, 0.28);
+  --dsw-alias-border-l1: rgba(83, 199, 226, 0.14);
+  --dsw-alias-border-l2: rgba(88, 211, 238, 0.20);
+  --dsw-alias-border-l3: rgba(98, 224, 249, 0.28);
+  --dsw-alias-interactive-bg-hover: rgba(45, 191, 224, 0.13);
+  --dsw-alias-bg-module-platform: rgba(7, 37, 53, 0.96);
+  --dsw-shadow-lv3: 0 22px 54px rgba(0, 5, 12, 0.46), 0 0 0 1px rgba(0, 10, 17, 0.42);
 
   padding-top: 27px !important;
   border: 1px solid rgba(93, 222, 255, 0.34) !important;
@@ -327,6 +335,13 @@
   --dsw-alias-label-tertiary: rgba(167, 207, 220, 0.82);
   --dsw-alias-label-caption: rgba(135, 184, 202, 0.76);
   --dsw-alias-interactive-bg-hover: rgba(45, 191, 224, 0.13);
+  --dsw-specific-menu: rgba(3, 24, 38, 0.985);
+  --dsw-alias-border-inverted: rgba(92, 222, 251, 0.28);
+  --dsw-alias-border-l1: rgba(83, 199, 226, 0.14);
+  --dsw-alias-border-l2: rgba(88, 211, 238, 0.20);
+  --dsw-alias-border-l3: rgba(98, 224, 249, 0.28);
+  --dsw-alias-bg-module-platform: rgba(7, 37, 53, 0.96);
+  --dsw-shadow-lv3: 0 22px 54px rgba(0, 5, 12, 0.46), 0 0 0 1px rgba(0, 10, 17, 0.42);
 
   border: 1px solid rgba(91, 222, 251, 0.32) !important;
   border-radius: 14px !important;
