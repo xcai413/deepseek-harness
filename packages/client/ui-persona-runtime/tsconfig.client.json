@@ -12,7 +12,8 @@
     "src/client/index.ts",
     "src/client/store.ts",
     "src/client/PersonaAvatar.tsx",
-    "src/client/PersonaSelector.tsx"
+    "src/client/PersonaSelector.tsx",
+    "src/client/JarvisSystemPanel.tsx"
   ],
   "references": [
     {
