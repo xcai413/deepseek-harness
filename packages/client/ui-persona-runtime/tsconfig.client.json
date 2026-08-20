@@ -8,6 +8,7 @@
   "files": [
     "src/wire.ts",
     "src/css-modules.d.ts",
+    "src/image-assets.d.ts",
     "src/client/index.ts",
     "src/client/store.ts",
     "src/client/PersonaSelector.tsx"
