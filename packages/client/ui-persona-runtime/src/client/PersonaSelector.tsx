@@ -78,17 +78,13 @@ function backgroundFor(
 ): BackgroundProjection | undefined {
   if (activeId === JARVIS_ID) {
     return {
-      // Preserve the cinematic background as the dominant visual. Only the
-      // central reading corridor gets a translucent veil; the peripheral
-      // command-room details stay crisp and saturated.
-      image: [
-        'linear-gradient(90deg, rgba(236, 248, 254, 0.16) 0%, rgba(244, 250, 253, 0.28) 15%, rgba(250, 253, 255, 0.60) 29%, rgba(250, 253, 255, 0.64) 68%, rgba(244, 250, 253, 0.32) 86%, rgba(236, 248, 254, 0.14) 100%)',
-        `url("${jarvisBackgroundUrl}")`,
-      ].join(', '),
-      size: '100% 100%, cover',
-      position: 'center, center center',
-      repeat: 'no-repeat, no-repeat',
-      blendMode: 'normal, normal',
+      // Keep the visual asset untouched. Readability is now owned by the
+      // transcript's stable [data-chat-flow] glass panel instead of a
+      // full-surface white veil, so the command-room image stays crisp.
+      image: `url("${jarvisBackgroundUrl}")`,
+      size: 'cover',
+      position: 'center center',
+      repeat: 'no-repeat',
     }
   }
   if (activeId === SHERLOCK_ID) {
