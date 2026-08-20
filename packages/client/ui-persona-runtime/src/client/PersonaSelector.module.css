@@ -241,6 +241,67 @@
   text-shadow: none;
 }
 
+/* JARVIS Command Console: the real Harness composer remains intact; Persona
+   only skins its stable data-composer-card seat. All keyboard, attachment,
+   permission, model and send semantics stay owned by InputBar. */
+.jarvisSurface [data-composer-card] {
+  --dsw-alias-label-primary: rgba(235, 249, 253, 0.97);
+  --dsw-alias-label-secondary: rgba(203, 229, 238, 0.88);
+  --dsw-alias-label-tertiary: rgba(171, 206, 219, 0.78);
+  --dsw-alias-label-caption: rgba(139, 187, 204, 0.74);
+
+  padding-top: 27px;
+  border: 1px solid rgba(93, 222, 255, 0.34);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(2, 20, 32, 0.94), rgba(2, 14, 24, 0.91));
+  box-shadow:
+    0 16px 42px rgba(0, 5, 12, 0.34),
+    0 0 0 1px rgba(0, 8, 14, 0.36),
+    inset 0 1px 0 rgba(150, 239, 255, 0.08),
+    inset 0 0 24px rgba(54, 208, 244, 0.045);
+}
+
+.jarvisSurface [data-composer-card]::before {
+  content: 'JARVIS COMMAND CONSOLE   //   READY';
+  position: absolute;
+  top: 7px;
+  left: 16px;
+  right: 16px;
+  height: 12px;
+  border-bottom: 1px solid rgba(79, 215, 247, 0.17);
+  color: rgba(128, 228, 246, 0.66);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 7px;
+  font-weight: 650;
+  line-height: 10px;
+  letter-spacing: 0.17em;
+  text-shadow: 0 0 8px rgba(79, 220, 255, 0.24);
+  pointer-events: none;
+}
+
+.jarvisSurface [data-composer-card] [data-input-scroll] {
+  border-top: 1px solid rgba(105, 222, 247, 0.045);
+}
+
+.jarvisSurface [data-composer-card] textarea {
+  caret-color: #79f2ff;
+}
+
+.jarvisSurface [data-composer-card] textarea::placeholder {
+  color: rgba(137, 182, 199, 0.70);
+}
+
+.jarvisSurface [data-composer-card]:focus-within {
+  border-color: rgba(116, 237, 255, 0.58);
+  box-shadow:
+    0 18px 46px rgba(0, 5, 12, 0.38),
+    0 0 0 1px rgba(86, 221, 250, 0.10),
+    0 0 24px rgba(56, 207, 242, 0.12),
+    inset 0 1px 0 rgba(160, 242, 255, 0.10),
+    inset 0 0 28px rgba(54, 208, 244, 0.06);
+}
+
 .activation {
   animation: jarvisActivation 1.2s cubic-bezier(0.2, 0.72, 0.22, 1);
 }
@@ -296,6 +357,11 @@
 
 @media (max-width: 720px) {
   .jarvisHud { display: none; }
+
+  .jarvisSurface [data-composer-card]::before {
+    content: 'JARVIS // READY';
+    letter-spacing: 0.12em;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
