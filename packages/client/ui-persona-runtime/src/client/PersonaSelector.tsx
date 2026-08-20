@@ -78,11 +78,11 @@ function backgroundFor(
 ): BackgroundProjection | undefined {
   if (activeId === JARVIS_ID) {
     return {
-      // Keep the cinematic image at its native 16:9 ratio. The first layer is
-      // a high-transmission reading veil: strong enough for black conversation
-      // text, but still leaves the command-room identity visible underneath.
+      // Preserve the cinematic background as the dominant visual. Only the
+      // central reading corridor gets a translucent veil; the peripheral
+      // command-room details stay crisp and saturated.
       image: [
-        'linear-gradient(90deg, rgba(244, 250, 253, 0.80) 0%, rgba(249, 252, 255, 0.91) 27%, rgba(250, 253, 255, 0.94) 58%, rgba(244, 250, 253, 0.82) 100%)',
+        'linear-gradient(90deg, rgba(236, 248, 254, 0.16) 0%, rgba(244, 250, 253, 0.28) 15%, rgba(250, 253, 255, 0.60) 29%, rgba(250, 253, 255, 0.64) 68%, rgba(244, 250, 253, 0.32) 86%, rgba(236, 248, 254, 0.14) 100%)',
         `url("${jarvisBackgroundUrl}")`,
       ].join(', '),
       size: '100% 100%, cover',
