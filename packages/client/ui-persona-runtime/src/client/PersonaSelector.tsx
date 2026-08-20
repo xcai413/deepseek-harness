@@ -18,6 +18,7 @@ import jarvisBackgroundUrl from './assets/jarvis/jarvis-background.png?dataurl'
 import { PersonaAvatar } from './PersonaAvatar.tsx'
 import type { PersonaStore } from './store.ts'
 import css from './PersonaSelector.module.css'
+import sidebarCss from './JarvisSidebar.module.css'
 
 const JARVIS_ID = 'persona-pack/jarvis'
 const SHERLOCK_ID = 'persona-pack/sherlock'
@@ -25,6 +26,7 @@ const JARVIS_SURFACE_CLASS = css.jarvisSurface!
 const JARVIS_CONSOLE_CLASS = css.jarvisConsole!
 const JARVIS_OVERLAY_CLASS = css.jarvisOverlay!
 const JARVIS_PORTAL_CLASS = css.jarvisPortal!
+const JARVIS_SIDEBAR_CLASS = sidebarCss.jarvisSidebar!
 const ACTIVATION_CLASS = css.activation!
 const JARVIS_HUD_CLASS = css.jarvisHud!
 const JARVIS_HUD_TOP_CLASS = css.jarvisHudTop!
@@ -88,12 +90,11 @@ function backgroundFor(
 ): BackgroundProjection | undefined {
   if (activeId === JARVIS_ID) {
     return {
-      // Keep the command-room image crisp. A very shallow header wash protects
-      // Harness' native dark title chrome; the central dark scrim carries the
-      // transcript contrast without turning the wallpaper into a white sheet.
+      // Keep the command-room image crisp. The title wash stays shallow while
+      // a slightly stronger center scrim protects long-form transcript contrast.
       image: [
-        'linear-gradient(180deg, rgba(239, 248, 252, 0.54) 0%, rgba(239, 248, 252, 0.24) 44px, rgba(239, 248, 252, 0.00) 86px)',
-        'linear-gradient(90deg, rgba(1, 9, 17, 0.10) 0%, rgba(1, 11, 20, 0.42) 24%, rgba(2, 14, 25, 0.58) 50%, rgba(1, 11, 20, 0.42) 76%, rgba(1, 9, 17, 0.10) 100%)',
+        'linear-gradient(180deg, rgba(239, 248, 252, 0.46) 0%, rgba(239, 248, 252, 0.18) 44px, rgba(239, 248, 252, 0.00) 86px)',
+        'linear-gradient(90deg, rgba(1, 9, 17, 0.14) 0%, rgba(1, 11, 20, 0.48) 24%, rgba(2, 14, 25, 0.64) 50%, rgba(1, 11, 20, 0.48) 76%, rgba(1, 9, 17, 0.14) 100%)',
         `url("${jarvisBackgroundUrl}")`,
       ].join(', '),
       size: '100% 100%, 100% 100%, cover',
@@ -163,6 +164,40 @@ function mountJarvisHud(root: HTMLElement): () => void {
   root.append(hud)
 
   return () => { hud.remove() }
+}
+
+/** Find the AppFrame without importing layout internals or relying on hashed classes. */
+function findAppFrame(root: HTMLElement): HTMLElement | null {
+  let candidate = root.parentElement
+  while (candidate !== null) {
+    const ownsShellOverlay = Array.from(candidate.children).some(child =>
+      child instanceof HTMLElement && child.hasAttribute('data-shell-overlay'))
+    if (ownsShellOverlay) return candidate
+    candidate = candidate.parentElement
+  }
+  return null
+}
+
+/**
+ * Project the active session Persona onto the shell's real sidebar column.
+ * The sidebar is a sibling of Conversation, so descendant selectors from the
+ * conversation root cannot reach it. AppFrame's first child is the sidebar
+ * column by contract; cleanup restores the shell as soon as this session stops
+ * owning JARVIS.
+ */
+function mountJarvisSidebar(root: HTMLElement): () => void {
+  const frame = findAppFrame(root)
+  const first = frame?.firstElementChild
+  const sidebar = first instanceof HTMLElement ? first : null
+  if (sidebar === null) return () => {}
+
+  sidebar.classList.add(JARVIS_SIDEBAR_CLASS)
+  sidebar.dataset.personaSidebar = 'jarvis'
+
+  return () => {
+    sidebar.classList.remove(JARVIS_SIDEBAR_CLASS)
+    delete sidebar.dataset.personaSidebar
+  }
 }
 
 /**
@@ -284,12 +319,14 @@ function usePersonaAppearance(
       composerCard?.classList.add(JARVIS_CONSOLE_CLASS)
     }
     const unmountHud = activeId === JARVIS_ID ? mountJarvisHud(root) : undefined
+    const unmountSidebar = activeId === JARVIS_ID ? mountJarvisSidebar(root) : undefined
     const unmountOverlays = activeId === JARVIS_ID
       ? mountJarvisOverlays(root, composerCard)
       : undefined
 
     return () => {
       unmountOverlays?.()
+      unmountSidebar?.()
       unmountHud?.()
       composerCard?.classList.remove(JARVIS_CONSOLE_CLASS)
       root.style.backgroundImage = previous.backgroundImage
