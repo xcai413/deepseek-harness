@@ -22,6 +22,7 @@ import css from './PersonaSelector.module.css'
 const JARVIS_ID = 'persona-pack/jarvis'
 const SHERLOCK_ID = 'persona-pack/sherlock'
 const JARVIS_SURFACE_CLASS = css.jarvisSurface!
+const JARVIS_CONSOLE_CLASS = css.jarvisConsole!
 const ACTIVATION_CLASS = css.activation!
 const JARVIS_HUD_CLASS = css.jarvisHud!
 const JARVIS_HUD_TOP_CLASS = css.jarvisHudTop!
@@ -193,11 +194,18 @@ function usePersonaAppearance(
       root.style.backgroundBlendMode = background.blendMode ?? ''
     }
     if (accent !== undefined) root.style.setProperty('--dsw-alias-state-business-primary', accent)
-    if (activeId === JARVIS_ID) root.classList.add(JARVIS_SURFACE_CLASS)
+
+    let composerCard: HTMLElement | null = null
+    if (activeId === JARVIS_ID) {
+      root.classList.add(JARVIS_SURFACE_CLASS)
+      composerCard = root.querySelector<HTMLElement>('[data-composer-card]')
+      composerCard?.classList.add(JARVIS_CONSOLE_CLASS)
+    }
     const unmountHud = activeId === JARVIS_ID ? mountJarvisHud(root) : undefined
 
     return () => {
       unmountHud?.()
+      composerCard?.classList.remove(JARVIS_CONSOLE_CLASS)
       root.style.backgroundImage = previous.backgroundImage
       root.style.backgroundSize = previous.backgroundSize
       root.style.backgroundPosition = previous.backgroundPosition
