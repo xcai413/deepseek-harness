@@ -1,0 +1,102 @@
+/* JARVIS Telemetry Console v0.1.
+ * ui-trajectory already exposes stable data attributes and consumes shared
+ * design tokens. Rebind those tokens only when the active JARVIS conversation
+ * is actually rendering a trajectory ledger; semantic timeline colors remain
+ * owned by ui-trajectory.
+ */
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll]) {
+  --dsw-alias-bg-base: #020d16;
+  --dsw-alias-bg-layer-1: #04131f;
+  --dsw-alias-bg-layer-2: #071b29;
+  --dsw-specific-sidebar-fill: #061824;
+  --dsw-alias-label-primary: rgba(235, 249, 253, 0.96);
+  --dsw-alias-label-secondary: rgba(194, 225, 236, 0.86);
+  --dsw-alias-label-tertiary: rgba(155, 198, 212, 0.76);
+  --dsw-alias-label-caption: rgba(126, 177, 194, 0.70);
+  --dsw-alias-label-dimmed: rgba(106, 145, 159, 0.48);
+  --dsw-alias-border-l1: rgba(78, 193, 220, 0.10);
+  --dsw-alias-border-l2: rgba(91, 215, 242, 0.18);
+  --dsw-alias-border-l3: rgba(105, 231, 255, 0.28);
+  --dsw-alias-separator-primary: rgba(82, 198, 224, 0.16);
+  --dsw-alias-interactive-bg-hover: rgba(52, 196, 226, 0.10);
+  --dsw-alias-interactive-bg-active: rgba(57, 207, 238, 0.15);
+  --dsw-alias-scrollbar-bg-l2: rgba(88, 205, 230, 0.20);
+  --dsw-alias-scrollbar-hover-l2: rgba(111, 228, 250, 0.36);
+  --dsh-scrollbar-thumb: rgba(88, 205, 230, 0.20);
+  --dsh-scrollbar-thumb-hover: rgba(111, 228, 250, 0.36);
+
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at 50% -20%, rgba(49, 191, 224, 0.08), transparent 42%),
+    #020d16 !important;
+}
+
+/* The ledger is a diagnostic surface: opaque enough for dense data, with a
+ * subtle system glow rather than the command-room wallpaper. */
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  [data-trajectory-scroll] {
+  background:
+    linear-gradient(180deg, rgba(5, 23, 35, 0.98), rgba(2, 14, 23, 0.99)) !important;
+  box-shadow: inset 0 1px 0 rgba(124, 232, 252, 0.035);
+}
+
+/* Table rows retain ui-trajectory's semantic content, while the left edge
+ * exposes event class at a glance like a telemetry ledger. */
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-kind]:not([data-collapsed-summary]) td:first-child {
+  box-shadow: inset 2px 0 0 rgba(112, 218, 239, 0.14);
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-kind='user'] td:first-child {
+  box-shadow: inset 2px 0 0 rgba(121, 242, 255, 0.58);
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-kind='message'] td:first-child {
+  box-shadow: inset 2px 0 0 rgba(163, 133, 255, 0.48);
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-kind='tool'] td:first-child,
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-kind='subtool'] td:first-child {
+  box-shadow: inset 2px 0 0 rgba(238, 190, 91, 0.52);
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-kind='system'] td:first-child {
+  box-shadow: inset 2px 0 0 rgba(126, 170, 185, 0.42);
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-error='true'] td:first-child {
+  box-shadow: inset 2px 0 0 rgba(255, 101, 109, 0.74);
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  tr[data-selected='true'] {
+  box-shadow:
+    inset 0 0 0 1px rgba(112, 229, 251, 0.12),
+    inset 18px 0 32px rgba(50, 196, 225, 0.035);
+}
+
+/* Search and other native trajectory controls inherit the same console
+ * material without changing their dimensions or behavior. */
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  :is(input, textarea, select) {
+  color-scheme: dark;
+  caret-color: #79f2ff;
+}
+
+[data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll])
+  :is(button, input, textarea, select):focus-visible {
+  outline-color: rgba(121, 242, 255, 0.62);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-phase]:has(> [data-persona-hud='jarvis']):has([data-trajectory-scroll]) * {
+    scroll-behavior: auto !important;
+  }
+}

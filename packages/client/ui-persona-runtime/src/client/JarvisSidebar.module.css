@@ -1,0 +1,119 @@
+.jarvisSidebar {
+  --dsw-specific-sidebar-fill: #04131f;
+  --dsw-alias-label-primary: rgba(235, 249, 253, 0.96);
+  --dsw-alias-label-secondary: rgba(195, 226, 237, 0.86);
+  --dsw-alias-label-tertiary: rgba(151, 193, 208, 0.74);
+  --dsw-alias-label-caption: rgba(124, 172, 190, 0.68);
+  --dsw-alias-state-business-primary: #79f2ff;
+  --dsw-alias-border-l1: rgba(82, 205, 235, 0.13);
+  --dsw-alias-border-l2: rgba(91, 218, 246, 0.20);
+  --dsw-alias-border-l3: rgba(106, 231, 255, 0.31);
+  --dsw-alias-button-elevated-fill: rgba(7, 31, 45, 0.92);
+  --dsw-alias-button-floating-hover: rgba(14, 57, 76, 0.94);
+  --dsw-alias-interactive-bg-hover: rgba(55, 196, 226, 0.12);
+  --dsw-alias-fill-tsp-secondary: rgba(24, 95, 117, 0.14);
+  --dsw-alias-scrollbar-bg-l2: rgba(94, 211, 235, 0.23);
+  --dsw-alias-scrollbar-hover-l2: rgba(116, 236, 255, 0.40);
+
+  position: relative;
+  background:
+    radial-gradient(circle at 18% 2%, rgba(57, 196, 231, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(4, 22, 34, 0.995), rgba(2, 13, 22, 0.998)) !important;
+  border-right: 1px solid rgba(82, 215, 246, 0.26) !important;
+  box-shadow:
+    inset -1px 0 0 rgba(120, 236, 255, 0.05),
+    inset -24px 0 46px rgba(0, 4, 10, 0.16),
+    10px 0 34px rgba(0, 7, 14, 0.11);
+}
+
+/* SidebarRoot normally paints its own opaque sidebar token. The Persona class
+   lives on AppFrame's real sidebar column, so make that one direct child
+   transparent and let all of its controls inherit the JARVIS token palette. */
+.jarvisSidebar > :first-child {
+  background: transparent !important;
+}
+
+/* A deliberately tiny identity marker: enough to make the shell feel linked
+   to the active Persona without turning navigation into another dashboard. */
+.jarvisSidebar::before {
+  content: 'PERSONA LINK  //  JARVIS ONLINE';
+  position: absolute;
+  z-index: 5;
+  top: 57px;
+  left: 16px;
+  max-width: calc(100% - 62px);
+  overflow: hidden;
+  color: rgba(119, 228, 247, 0.52);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 6px;
+  font-weight: 650;
+  line-height: 10px;
+  letter-spacing: 0.13em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(69, 216, 245, 0.14);
+  pointer-events: none;
+}
+
+/* Quiet system trace at the handoff between shell navigation and the active
+   Persona surface. */
+.jarvisSidebar::after {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  top: 76px;
+  right: -1px;
+  bottom: 58px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(105, 235, 255, 0.18) 14%,
+    rgba(121, 242, 255, 0.55) 50%,
+    rgba(105, 235, 255, 0.18) 86%,
+    transparent
+  );
+  box-shadow: 0 0 9px rgba(73, 218, 248, 0.18);
+  pointer-events: none;
+}
+
+.jarvisSidebar button,
+.jarvisSidebar input {
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.jarvisSidebar button:focus-visible,
+.jarvisSidebar input:focus-visible {
+  outline: 1px solid rgba(121, 242, 255, 0.62);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(79, 218, 248, 0.09);
+}
+
+.jarvisSidebar button[aria-label] {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.22);
+}
+
+.jarvisSidebar input {
+  caret-color: #79f2ff;
+}
+
+.jarvisSidebar input::placeholder {
+  color: rgba(139, 184, 201, 0.66);
+}
+
+/* The AppFrame emits this flag only after the rail is actually collapsed.
+   Hide prose there and keep the rail icon-only. */
+:global([data-sidebar-collapsed='true']) > .jarvisSidebar::before {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jarvisSidebar button,
+  .jarvisSidebar input {
+    transition: none;
+  }
+}

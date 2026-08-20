@@ -1,0 +1,26 @@
+{
+  "extends": "../../../tsconfig.base.client.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types",
+    "tsBuildInfoFile": "lib/tsconfig.client.tsbuildinfo"
+  },
+  "files": [
+    "src/wire.ts",
+    "src/css-modules.d.ts",
+    "src/image-assets.d.ts",
+    "src/client/index.ts",
+    "src/client/store.ts",
+    "src/client/PersonaAvatar.tsx",
+    "src/client/PersonaSelector.tsx",
+    "src/client/JarvisSystemPanel.tsx"
+  ],
+  "references": [
+    {
+      "path": "../../../vendor/cordis"
+    },
+    {
+      "path": "../ui-primitives"
+    }
+  ]
+}
