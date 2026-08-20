@@ -15,7 +15,6 @@ import {
 import type { PersonaAppearance, PersonaTarget } from '../wire.ts'
 import jarvisAvatarUrl from './assets/jarvis/jarvis-avatar.png?dataurl'
 import jarvisBackgroundUrl from './assets/jarvis/jarvis-background.png?dataurl'
-import jarvisHudOverlayUrl from './assets/jarvis/jarvis-hud-overlay.png?dataurl'
 import { PersonaAvatar } from './PersonaAvatar.tsx'
 import type { PersonaStore } from './store.ts'
 import css from './PersonaSelector.module.css'
@@ -24,6 +23,14 @@ const JARVIS_ID = 'persona-pack/jarvis'
 const SHERLOCK_ID = 'persona-pack/sherlock'
 const JARVIS_SURFACE_CLASS = css.jarvisSurface!
 const ACTIVATION_CLASS = css.activation!
+
+interface BackgroundProjection {
+  image: string
+  size: string
+  position: string
+  repeat: string
+  blendMode?: string
+}
 
 /** Registration-side business face for the header selector. */
 export interface PersonaSelectorInjected {
@@ -68,27 +75,48 @@ function appearanceWithResolvedAvatar(
 function backgroundFor(
   activeId: string | undefined,
   configured: string | undefined,
-): { image: string; layers: number } | undefined {
+): BackgroundProjection | undefined {
   if (activeId === JARVIS_ID) {
     return {
+      // Keep the cinematic image at its native 16:9 ratio. The first layer is
+      // a high-transmission reading veil: strong enough for black conversation
+      // text, but still leaves the command-room identity visible underneath.
       image: [
-        `url("${jarvisHudOverlayUrl}")`,
-        'radial-gradient(circle at 50% 46%, rgba(240, 250, 255, 0.82) 0%, rgba(15, 42, 58, 0.45) 64%, rgba(3, 14, 24, 0.68) 100%)',
+        'linear-gradient(90deg, rgba(244, 250, 253, 0.80) 0%, rgba(249, 252, 255, 0.91) 27%, rgba(250, 253, 255, 0.94) 58%, rgba(244, 250, 253, 0.82) 100%)',
         `url("${jarvisBackgroundUrl}")`,
       ].join(', '),
-      layers: 3,
+      size: '100% 100%, cover',
+      position: 'center, center center',
+      repeat: 'no-repeat, no-repeat',
+      blendMode: 'normal, normal',
     }
   }
   if (activeId === SHERLOCK_ID) {
     return {
       image: 'radial-gradient(circle at 18% 14%, rgba(122, 62, 72, 0.20), transparent 42%), linear-gradient(135deg, rgba(77, 45, 38, 0.10), rgba(116, 87, 57, 0.08))',
-      layers: 2,
+      size: 'cover, cover',
+      position: 'center, center',
+      repeat: 'no-repeat, no-repeat',
     }
   }
 
   const url = resolvableImageUrl(configured)
-  if (url !== undefined) return { image: `url("${url}")`, layers: 1 }
-  if (configured?.includes('gradient(') === true) return { image: configured, layers: 1 }
+  if (url !== undefined) {
+    return {
+      image: `url("${url}")`,
+      size: 'cover',
+      position: 'center',
+      repeat: 'no-repeat',
+    }
+  }
+  if (configured?.includes('gradient(') === true) {
+    return {
+      image: configured,
+      size: 'cover',
+      position: 'center',
+      repeat: 'no-repeat',
+    }
+  }
   return undefined
 }
 
@@ -116,14 +144,11 @@ function usePersonaAppearance(
     }
 
     if (background !== undefined) {
-      const perLayer = Array.from({ length: background.layers }, () => 'cover').join(', ')
-      const perLayerCenter = Array.from({ length: background.layers }, () => 'center').join(', ')
-      const perLayerRepeat = Array.from({ length: background.layers }, () => 'no-repeat').join(', ')
       root.style.backgroundImage = background.image
-      root.style.backgroundSize = perLayer
-      root.style.backgroundPosition = perLayerCenter
-      root.style.backgroundRepeat = perLayerRepeat
-      if (activeId === JARVIS_ID) root.style.backgroundBlendMode = 'screen, normal, normal'
+      root.style.backgroundSize = background.size
+      root.style.backgroundPosition = background.position
+      root.style.backgroundRepeat = background.repeat
+      root.style.backgroundBlendMode = background.blendMode ?? ''
     }
     if (accent !== undefined) root.style.setProperty('--dsw-alias-state-business-primary', accent)
     if (activeId === JARVIS_ID) root.classList.add(JARVIS_SURFACE_CLASS)
