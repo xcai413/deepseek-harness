@@ -23,6 +23,8 @@ const JARVIS_ID = 'persona-pack/jarvis'
 const SHERLOCK_ID = 'persona-pack/sherlock'
 const JARVIS_SURFACE_CLASS = css.jarvisSurface!
 const JARVIS_CONSOLE_CLASS = css.jarvisConsole!
+const JARVIS_OVERLAY_CLASS = css.jarvisOverlay!
+const JARVIS_PORTAL_CLASS = css.jarvisPortal!
 const ACTIVATION_CLASS = css.activation!
 const JARVIS_HUD_CLASS = css.jarvisHud!
 const JARVIS_HUD_TOP_CLASS = css.jarvisHudTop!
@@ -163,6 +165,86 @@ function mountJarvisHud(root: HTMLElement): () => void {
   return () => { hud.remove() }
 }
 
+/**
+ * Theme transient composer-owned overlays without mutating the global Harness
+ * theme. In-place listboxes are tagged through the active composer subtree;
+ * body-portaled Menu cards are accepted only when their geometry is adjacent
+ * to this conversation's composer, so unrelated sidebar/header menus stay
+ * untouched. All tags are removed when JARVIS leaves the session.
+ */
+function mountJarvisOverlays(root: HTMLElement, composerCard: HTMLElement | null): () => void {
+  const tagged = new Set<HTMLElement>()
+  let firstFrame: number | undefined
+  let secondFrame: number | undefined
+
+  const tag = (element: HTMLElement, className: string): void => {
+    if (element.classList.contains(className)) return
+    element.classList.add(className)
+    tagged.add(element)
+  }
+
+  const tagComposerOverlays = (): void => {
+    if (composerCard === null) return
+
+    for (const listbox of composerCard.querySelectorAll<HTMLElement>('[role="listbox"]')) {
+      const card = listbox.parentElement
+      if (card instanceof HTMLElement && card !== composerCard) tag(card, JARVIS_OVERLAY_CLASS)
+    }
+
+    for (const menu of composerCard.querySelectorAll<HTMLElement>('[role="menu"]')) {
+      if (menu !== composerCard) tag(menu, JARVIS_OVERLAY_CLASS)
+    }
+  }
+
+  const tagNearbyPortals = (): void => {
+    if (composerCard === null) return
+    const composerRect = composerCard.getBoundingClientRect()
+
+    for (const menu of document.body.querySelectorAll<HTMLElement>(':scope > [role="menu"]')) {
+      if (root.contains(menu)) continue
+      const menuRect = menu.getBoundingClientRect()
+      if (menuRect.width === 0 || menuRect.height === 0) continue
+
+      const overlapsConsoleX = menuRect.right >= composerRect.left - 80
+        && menuRect.left <= composerRect.right + 80
+      const nearConsoleY = menuRect.bottom >= composerRect.top - 440
+        && menuRect.top <= composerRect.bottom + 96
+      if (overlapsConsoleX && nearConsoleY) tag(menu, JARVIS_PORTAL_CLASS)
+    }
+  }
+
+  const scan = (): void => {
+    tagComposerOverlays()
+    tagNearbyPortals()
+  }
+
+  const scheduleScan = (): void => {
+    if (firstFrame !== undefined) window.cancelAnimationFrame(firstFrame)
+    if (secondFrame !== undefined) window.cancelAnimationFrame(secondFrame)
+    firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(scan)
+    })
+  }
+
+  const rootObserver = new MutationObserver(scheduleScan)
+  const bodyObserver = new MutationObserver(scheduleScan)
+  rootObserver.observe(root, { childList: true, subtree: true })
+  bodyObserver.observe(document.body, { childList: true })
+  scan()
+  scheduleScan()
+
+  return () => {
+    rootObserver.disconnect()
+    bodyObserver.disconnect()
+    if (firstFrame !== undefined) window.cancelAnimationFrame(firstFrame)
+    if (secondFrame !== undefined) window.cancelAnimationFrame(secondFrame)
+    for (const element of tagged) {
+      element.classList.remove(JARVIS_OVERLAY_CLASS)
+      element.classList.remove(JARVIS_PORTAL_CLASS)
+    }
+  }
+}
+
 /** Apply only the committed Persona appearance to the current conversation root. */
 function usePersonaAppearance(
   anchor: RefObject<HTMLSpanElement>,
@@ -202,8 +284,12 @@ function usePersonaAppearance(
       composerCard?.classList.add(JARVIS_CONSOLE_CLASS)
     }
     const unmountHud = activeId === JARVIS_ID ? mountJarvisHud(root) : undefined
+    const unmountOverlays = activeId === JARVIS_ID
+      ? mountJarvisOverlays(root, composerCard)
+      : undefined
 
     return () => {
+      unmountOverlays?.()
       unmountHud?.()
       composerCard?.classList.remove(JARVIS_CONSOLE_CLASS)
       root.style.backgroundImage = previous.backgroundImage
