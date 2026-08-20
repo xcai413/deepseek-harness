@@ -23,6 +23,13 @@ const JARVIS_ID = 'persona-pack/jarvis'
 const SHERLOCK_ID = 'persona-pack/sherlock'
 const JARVIS_SURFACE_CLASS = css.jarvisSurface!
 const ACTIVATION_CLASS = css.activation!
+const JARVIS_HUD_CLASS = css.jarvisHud!
+const JARVIS_HUD_TOP_CLASS = css.jarvisHudTop!
+const JARVIS_HUD_NAME_CLASS = css.jarvisHudName!
+const JARVIS_HUD_DOT_CLASS = css.jarvisHudDot!
+const JARVIS_HUD_STATUS_CLASS = css.jarvisHudStatus!
+const JARVIS_HUD_META_CLASS = css.jarvisHudMeta!
+const JARVIS_HUD_TRACE_CLASS = css.jarvisHudTrace!
 
 interface BackgroundProjection {
   image: string
@@ -78,12 +85,11 @@ function backgroundFor(
 ): BackgroundProjection | undefined {
   if (activeId === JARVIS_ID) {
     return {
-      // Keep the command-room image crisp. Readability comes from two optical
-      // scrims rather than a floating card: a shallow light header wash keeps
-      // Harness' native dark header chrome readable, while a dark cinematic
-      // centre scrim gives the transcript enough contrast for light text.
+      // Keep the command-room image crisp. A very shallow header wash protects
+      // Harness' native dark title chrome; the central dark scrim carries the
+      // transcript contrast without turning the wallpaper into a white sheet.
       image: [
-        'linear-gradient(180deg, rgba(244, 250, 253, 0.82) 0%, rgba(244, 250, 253, 0.58) 64px, rgba(244, 250, 253, 0.00) 132px)',
+        'linear-gradient(180deg, rgba(239, 248, 252, 0.54) 0%, rgba(239, 248, 252, 0.24) 44px, rgba(239, 248, 252, 0.00) 86px)',
         'linear-gradient(90deg, rgba(1, 9, 17, 0.10) 0%, rgba(1, 11, 20, 0.42) 24%, rgba(2, 14, 25, 0.58) 50%, rgba(1, 11, 20, 0.42) 76%, rgba(1, 9, 17, 0.10) 100%)',
         `url("${jarvisBackgroundUrl}")`,
       ].join(', '),
@@ -121,6 +127,41 @@ function backgroundFor(
   return undefined
 }
 
+function mountJarvisHud(root: HTMLElement): () => void {
+  const hud = document.createElement('div')
+  hud.className = JARVIS_HUD_CLASS
+  hud.dataset.personaHud = 'jarvis'
+  hud.setAttribute('aria-hidden', 'true')
+
+  const top = document.createElement('div')
+  top.className = JARVIS_HUD_TOP_CLASS
+
+  const name = document.createElement('span')
+  name.className = JARVIS_HUD_NAME_CLASS
+  name.textContent = 'J.A.R.V.I.S'
+
+  const dot = document.createElement('span')
+  dot.className = JARVIS_HUD_DOT_CLASS
+
+  const status = document.createElement('span')
+  status.className = JARVIS_HUD_STATUS_CLASS
+  status.textContent = 'ONLINE'
+
+  top.append(name, dot, status)
+
+  const meta = document.createElement('div')
+  meta.className = JARVIS_HUD_META_CLASS
+  meta.textContent = 'SESSION LINKED  //  CORE NOMINAL'
+
+  const trace = document.createElement('div')
+  trace.className = JARVIS_HUD_TRACE_CLASS
+
+  hud.append(top, meta, trace)
+  root.append(hud)
+
+  return () => { hud.remove() }
+}
+
 /** Apply only the committed Persona appearance to the current conversation root. */
 function usePersonaAppearance(
   anchor: RefObject<HTMLSpanElement>,
@@ -153,8 +194,10 @@ function usePersonaAppearance(
     }
     if (accent !== undefined) root.style.setProperty('--dsw-alias-state-business-primary', accent)
     if (activeId === JARVIS_ID) root.classList.add(JARVIS_SURFACE_CLASS)
+    const unmountHud = activeId === JARVIS_ID ? mountJarvisHud(root) : undefined
 
     return () => {
+      unmountHud?.()
       root.style.backgroundImage = previous.backgroundImage
       root.style.backgroundSize = previous.backgroundSize
       root.style.backgroundPosition = previous.backgroundPosition
