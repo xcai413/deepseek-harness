@@ -241,28 +241,26 @@
   text-shadow: none;
 }
 
-/* JARVIS Command Console: the real Harness composer remains intact; Persona
-   only skins its stable data-composer-card seat. All keyboard, attachment,
-   permission, model and send semantics stay owned by InputBar. */
-.jarvisSurface [data-composer-card] {
+/* JARVIS Command Console: this class is mounted directly on the real Harness
+   composer card, avoiding cross-module descendant selector/cascade ambiguity. */
+.jarvisConsole {
   --dsw-alias-label-primary: rgba(235, 249, 253, 0.97);
   --dsw-alias-label-secondary: rgba(203, 229, 238, 0.88);
   --dsw-alias-label-tertiary: rgba(171, 206, 219, 0.78);
   --dsw-alias-label-caption: rgba(139, 187, 204, 0.74);
 
-  padding-top: 27px;
-  border: 1px solid rgba(93, 222, 255, 0.34);
-  border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(2, 20, 32, 0.94), rgba(2, 14, 24, 0.91));
+  padding-top: 27px !important;
+  border: 1px solid rgba(93, 222, 255, 0.34) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, rgba(2, 20, 32, 0.96), rgba(2, 14, 24, 0.93)) !important;
   box-shadow:
     0 16px 42px rgba(0, 5, 12, 0.34),
     0 0 0 1px rgba(0, 8, 14, 0.36),
     inset 0 1px 0 rgba(150, 239, 255, 0.08),
-    inset 0 0 24px rgba(54, 208, 244, 0.045);
+    inset 0 0 24px rgba(54, 208, 244, 0.045) !important;
 }
 
-.jarvisSurface [data-composer-card]::before {
+.jarvisConsole::before {
   content: 'JARVIS COMMAND CONSOLE   //   READY';
   position: absolute;
   top: 7px;
@@ -280,26 +278,26 @@
   pointer-events: none;
 }
 
-.jarvisSurface [data-composer-card] [data-input-scroll] {
+.jarvisConsole [data-input-scroll] {
   border-top: 1px solid rgba(105, 222, 247, 0.045);
 }
 
-.jarvisSurface [data-composer-card] textarea {
-  caret-color: #79f2ff;
+.jarvisConsole textarea {
+  caret-color: #79f2ff !important;
 }
 
-.jarvisSurface [data-composer-card] textarea::placeholder {
-  color: rgba(137, 182, 199, 0.70);
+.jarvisConsole textarea::placeholder {
+  color: rgba(137, 182, 199, 0.70) !important;
 }
 
-.jarvisSurface [data-composer-card]:focus-within {
-  border-color: rgba(116, 237, 255, 0.58);
+.jarvisConsole:focus-within {
+  border-color: rgba(116, 237, 255, 0.58) !important;
   box-shadow:
     0 18px 46px rgba(0, 5, 12, 0.38),
     0 0 0 1px rgba(86, 221, 250, 0.10),
     0 0 24px rgba(56, 207, 242, 0.12),
     inset 0 1px 0 rgba(160, 242, 255, 0.10),
-    inset 0 0 28px rgba(54, 208, 244, 0.06);
+    inset 0 0 28px rgba(54, 208, 244, 0.06) !important;
 }
 
 .activation {
@@ -358,7 +356,7 @@
 @media (max-width: 720px) {
   .jarvisHud { display: none; }
 
-  .jarvisSurface [data-composer-card]::before {
+  .jarvisConsole::before {
     content: 'JARVIS // READY';
     letter-spacing: 0.12em;
   }
