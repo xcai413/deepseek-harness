@@ -11,6 +11,7 @@
     "src/image-assets.d.ts",
     "src/client/index.ts",
     "src/client/store.ts",
+    "src/client/PersonaAvatar.tsx",
     "src/client/PersonaSelector.tsx"
   ],
   "references": [
