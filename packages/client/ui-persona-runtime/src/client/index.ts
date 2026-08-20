@@ -3,6 +3,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import './JarvisSidebar.module.css'
 import './JarvisFooter.module.css'
+import './JarvisSettings.module.css'
 import { PersonaSelector } from './PersonaSelector.tsx'
 import type { PersonaSelectorInjected } from './PersonaSelector.tsx'
 import { PersonaUiController, type PersonaRpc } from './store.ts'
