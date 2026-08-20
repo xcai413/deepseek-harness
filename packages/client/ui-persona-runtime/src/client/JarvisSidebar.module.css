@@ -27,6 +27,13 @@
     10px 0 34px rgba(0, 7, 14, 0.10);
 }
 
+/* SidebarRoot normally paints the solid sidebar token over the whole column.
+   Keep its token inheritance but let the Persona shell gradient remain the
+   actual material underneath. */
+:global([data-sidebar-collapsed]:has([data-persona-hud='jarvis']) > :first-child > *) {
+  background: transparent !important;
+}
+
 /* Quiet system trace at the handoff between shell navigation and the active
    Persona surface. It gives the sidebar a JARVIS identity without turning the
    navigation rail into another HUD panel. */
